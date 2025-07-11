@@ -16,7 +16,8 @@ class UserController extends Controller
     }
     public function create(Request $request){
         $user = new User;
-        $user->name=$request->email;
+        // dd($request->all());
+        $user->name=$request->name;
         $user->email=$request->email;
         $user->birthDate=$request->birthDate;
         $user->CPF=$request->CPF;
