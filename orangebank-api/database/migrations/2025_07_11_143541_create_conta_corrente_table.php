@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('conta_corrente', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->decimal('saldo',10,2);
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->refereces('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->timestamps();
 
         });
     }
