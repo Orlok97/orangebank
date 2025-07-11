@@ -21,6 +21,7 @@ class UserController extends Controller
         $user->birthDate=$request->birthDate;
         $user->CPF=$request->CPF;
         $user->password=$request->password;
+        $user->save();
         return response()->json([
             'response'=>'usuario criado com sucesso!'
         ]);
