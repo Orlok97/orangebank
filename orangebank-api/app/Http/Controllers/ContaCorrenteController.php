@@ -8,21 +8,44 @@ use App\Models\ContaCorrente;
 
 class ContaCorrenteController extends Controller
 {
-    private $saldo=0.0;
 
-    public function depositarSaldo(Request $request, $valor){
+    public function getSaldo(){
+        $corrente=ContaCorrente::where('user_id','=',auth()->user()->id)->first();
+        return response()->json([
+            'response'=>$corrente->saldo
+        ]);
+    }
+
+    public function depositarSaldo(Request $request){
         $corrente=ContaCorrente::where('user_id',auth()->user()->id)->first();
-        if($valor > 0){
-            $corrente->saldo=$corrente->saldo+$valor;
+        if($corrente == null && $request->valor >0){
+            $corrente=new ContaCorrente;
+            $corrente->saldo=$request->valor;
+            $corrente->user_id=auth()->user()->id;
             $corrente->save();
             return response()->json([
-            'response'=>'você depositou '.$valor. ' em sua conta corrente'
+            'response'=>'você depositou '.$corrente->valor. ' em sua conta corrente',
+            'status'=>'ok'
         ], 200);
-        }else{
-            return response()->json([
-                'response'=>'operação inválida.'
-            ]);
-        } 
+        }elseif($corrente != null && $request->valor > 0){
+            $saldo=$corrente->saldo;
+            $corrente->saldo=($request->valor+$saldo);
+            $corrente->save();
+        }
+        // if($request->valor > 0){
+        //     $corrente->saldo=$request->$valor;
+        //     $corrente->user_id=auth()->user()->id;
+        //     $corrente->save();
+        //     return response()->json([
+        //     'response'=>'você depositou '.$corrente->valor. ' em sua conta corrente',
+        //     'status'=>'ok'
+        // ], 200);
+        // }else{
+        //     return response()->json([
+        //         'response'=>'operação inválida.',
+        //         'status'=>'error'
+        //     ],500);
+        // } 
 
     }
 }

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('conta_corrente', function (Blueprint $table) {
+        Schema::create('conta_correntes', function (Blueprint $table) {
             $table->id();
-            $table->decimal('saldo',10,2);
+            $table->decimal('saldo',10,2)->default(0);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
