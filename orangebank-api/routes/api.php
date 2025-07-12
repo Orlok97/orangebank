@@ -13,4 +13,5 @@ Route::post('/auth',[AuthController::class,'login']);
 Route::prefix('corrente')->middleware('auth:sanctum')->group(function(){
     Route::get('/',[ContaCorrenteController::class,'getSaldo']);
     Route::post('/',[ContaCorrenteController::class,'depositarSaldo']);
+    Route::post('/transferir/{id}',[ContaCorrenteController::class,'transferirSaldo']);
 });
