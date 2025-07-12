@@ -15,6 +15,12 @@ class UserController extends Controller
             'response'=>$users
         ]);
     }
+    public function getAuthUser(){
+        $user=auth()->user();
+        return response()->json([
+            'response'=>$user
+        ]);
+    }
     public function create(Request $request){
         $user = new User;
         // dd($request->all())

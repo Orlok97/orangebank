@@ -20,7 +20,7 @@ const handleLogin=async()=>{
                 <v-row justify="center">
             <v-col cols="12" md="6">
                 <v-form>
-                    <v-text-field v-model="email" type="email"></v-text-field>
+                    <v-text-field v-model="email" type="email" label="email"></v-text-field>
                 </v-form>
             </v-col>
         </v-row>
@@ -28,7 +28,7 @@ const handleLogin=async()=>{
         <v-row justify="center">
             <v-col cols="12" md="6">
                 <v-form>
-                    <v-text-field v-model="password" type="password"></v-text-field>
+                    <v-text-field v-model="password" type="password" label="senha"></v-text-field>
                 </v-form>
             </v-col>
         </v-row>

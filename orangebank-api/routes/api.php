@@ -9,6 +9,7 @@ use App\HTTP\Controllers\ContaCorrenteController;
 Route::get('/users',[UserController::class,'index']);
 Route::post('/user',[UserController::class,'create']);
 Route::post('/auth',[AuthController::class,'login']);
+Route::get('/user/auth',[UserController::class,'getAuthUser'])->middleware('auth:sanctum');
 
 Route::prefix('corrente')->middleware('auth:sanctum')->group(function(){
     Route::get('/',[ContaCorrenteController::class,'getSaldo']);
