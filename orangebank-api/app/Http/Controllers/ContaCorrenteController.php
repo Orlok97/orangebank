@@ -50,8 +50,8 @@ class ContaCorrenteController extends Controller
             $conta_corrente->saldo=$request->valor;
             $conta_corrente->user_id=$user->id;
             $conta_corrente->save();
-        }elseif($conta_corrente->saldo != null && $request->valor > 0){
-            $saldoAtual=$conta_corrente->salto;;
+        }elseif($conta_corrente != null && $request->valor > 0){
+            $saldoAtual=$conta_corrente->saldo;
             $conta_corrente->saldo=($request->valor+$saldoAtual);
             $conta_corrente->save();
         }
