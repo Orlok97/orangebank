@@ -26,13 +26,21 @@ class ContaCorrenteController extends Controller
             $corrente->user_id=auth()->user()->id;
             $corrente->save();
             return response()->json([
-            'response'=>'você depositou '.$corrente->valor. ' em sua conta corrente',
+            'response'=>'você depositou '.$request->valor. ' em sua conta corrente',
             'status'=>'ok'
         ], 200);
         }elseif($corrente != null && $request->valor > 0){
             $saldoAtual=$corrente->saldo;
             $corrente->saldo=($request->valor+$saldoAtual);
             $corrente->save();
+            return response()->json([
+            'response'=>'você depositou '.$request->valor. ' em sua conta corrente',
+            'status'=>'ok'
+        ], 200);
+        }else{
+            return response()->json([
+                'response'=>'saldo insuficiente.'
+            ]);
         }
 
     }
