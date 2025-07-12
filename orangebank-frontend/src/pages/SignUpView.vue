@@ -28,35 +28,38 @@ const createUser=async()=>{
     <div>
         <v-form @submit.prevent="createUser">
             <v-container>
-                <v-row>
-                    <v-col cols="12" md="4">
+                <v-row justify="center">
+                    <v-col cols="12" md="6">
                         <v-text-field v-model="name" label="Nome"></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col cols="12" md="4">
+                <v-row justify="center">
+                    <v-col cols="12" md="6">
                         <v-text-field v-model="email" label="email"></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col cols="12" md="4">
+                <v-row justify="center">
+                    <v-col cols="12" md="6">
                         <v-date-picker v-model="birthDate"></v-date-picker>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col cols="12" md="4">
+                <v-row justify="center">
+                    <v-col cols="12" md="6">
                         <v-text-field v-model="cpf" label="CPF"></v-text-field>
                     </v-col>
                 </v-row>
 
-                <v-row>
-                    <v-col cols="12" md="4">
+                <v-row justify="center">
+                    <v-col cols="12" md="6">
                         <v-text-field type="password" v-model="password" label="senha"></v-text-field>
                     </v-col>
                 </v-row>
-                <v-btn color="deep-orange" type="submit">
-                    Enviar
-                </v-btn>
+                <v-row justify="center">
+                    <v-btn color="deep-orange" type="submit">
+                        Enviar
+                    </v-btn>
+                </v-row>
+                
             </v-container>
         </v-form>
     </div>
