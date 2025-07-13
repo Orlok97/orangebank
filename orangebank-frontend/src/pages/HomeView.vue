@@ -1,10 +1,14 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
+const authStore=useAuthStore()
 const userStore = useUserStore()
 const dialog = ref(false)
 
+const router=useRouter()
 const isSaldoVisible = ref(true);
 const icon = ref('mdi-eye-off')
 const tab = ref(null)
@@ -12,6 +16,16 @@ const extratoTab = ref('depositos')
 const stocks = ref(null)
 const fixedIncome = ref(null)
 const stocksDialog=ref(false)
+const drawer = ref(false)
+const group = ref(null)
+
+const items = [
+    {
+        title: 'Minha Conta',
+        value: ''
+    }
+]
+
 
 onMounted(async () => {
 
@@ -37,14 +51,10 @@ const toggleIcon = () => {
         icon.value = 'mdi-eye-off-outline'
     }
 }
-const items = [
-    {
-        title: 'Minha Conta',
-        value: ''
-    }
-]
-const drawer = ref(false)
-const group = ref(null)
+const handleLogout=async()=>{
+    await authStore.logout(router)
+}
+
 
 watch(group, () => {
     drawer.value = false
@@ -59,7 +69,7 @@ watch(group, () => {
 
                 <v-toolbar-title>OrangeBank</v-toolbar-title>
 
-                <v-btn icon="mdi-logout" variant="text"></v-btn>
+                <v-btn icon="mdi-logout" @click="handleLogout" variant="text"></v-btn>
             </v-app-bar>
 
             <v-navigation-drawer v-model="drawer" :location="$vuetify.display.mobile ? 'left' : undefined" temporary>

@@ -22,4 +22,12 @@ class AuthController extends Controller
             ]);
         }
     }
+
+    public function logout(){
+        $user=Auth::User();
+        $user->currentAccessToken()->delete();
+        return response()->json([
+            'response'=>'sessão encerrada!'
+        ]);
+    }
 }
