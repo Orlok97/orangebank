@@ -11,9 +11,12 @@ const themeIcon = ref('mdi-weather-sunny')
 const isThemeDark = ref(true)
 const authStore = useAuthStore()
 const userStore = useUserStore()
-const correnteStore=useCorrenteStore()
+const correnteStore = useCorrenteStore()
 const dialog = ref(false)
-const valorDeposito=ref(0)
+const dialogTransferencia = ref(false)
+const valorDeposito = ref(0)
+const valorTransferencia = ref(0)
+const contaID = ref(null)
 const router = useRouter()
 const isSaldoVisible = ref(true);
 const icon = ref('mdi-eye-off')
@@ -69,10 +72,15 @@ const toggleIcon = () => {
         icon.value = 'mdi-eye-off-outline'
     }
 }
-const handleDepositaSaldo=async()=>{
-    console.log(valorDeposito.value,'teste')
+const handleDepositaSaldo = async () => {
+    console.log(valorDeposito.value, 'teste')
     await correnteStore.createDeposito(valorDeposito.value)
-    dialog.value=false;
+    dialog.value = false;
+}
+
+const handleTransfereSaldo = async () => {
+    await correnteStore.trasnferirSaldo(contaID.value, valorTransferencia.value)
+    dialogTransferencia.value = false;
 }
 const handleLogout = async () => {
     await authStore.logout(router)
@@ -120,7 +128,8 @@ watch(group, () => {
                                         height="200">
 
                                         <div class="d-flex justify-space-between align-center my-5">
-                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS {{ correnteStore.saldo }}</p>
+                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS {{ correnteStore.saldo }}
+                                            </p>
                                             <p v-else class="text-h5 mx-2">$RS ****</p>
                                             <v-icon class="mx-4" :icon="icon" size="x-large"
                                                 @click="toggleIcon"></v-icon>
@@ -140,7 +149,7 @@ watch(group, () => {
                                 </v-col>
                                 <v-col align="center" cols="6" md="2">
                                     <v-btn size="large" color="deep-orange" variant="outlined"
-                                        @click="dialog = !dialog">
+                                        @click="dialogTransferencia = !dialogTransferencia">
                                         Transferir
                                         <v-icon icon="mdi-bank-transfer" end></v-icon>
                                     </v-btn>
@@ -160,9 +169,10 @@ watch(group, () => {
                                     <v-row justify="center">
                                         <v-col cols="12">
                                             <v-card v-for="extrato in correnteStore.extrato" title="Depósito">
-                                                <div class="d-flex justify-space-between text-deep-orange">
+                                                <div v-if="extrato.tipo === 'deposito'"
+                                                    class="d-flex justify-space-between text-deep-orange">
                                                     <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                                    <p class="mx-5">{{ extrato.saldo  }}</p>
+                                                    <p class="mx-5">{{ extrato.saldo }}</p>
                                                 </div>
                                             </v-card>
                                             <v-divider></v-divider>
@@ -174,19 +184,16 @@ watch(group, () => {
                                 <v-tabs-window-item value="transferencias">
                                     <v-row justify="center">
                                         <v-col cols="12">
-                                            <v-card title="Transferência">
-                                                <div class="d-flex justify-space-between text-deep-orange">
+                                            <v-card v-for="extrato in correnteStore.extrato" title="Transferência">
+                                                <div v-if="extrato.tipo === 'transferencia'" class="d-flex justify-space-between text-deep-orange">
                                                     <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                                    <p class="mx-5">12</p>
+                                                    <p class="mx-5">{{ extrato.saldo }}</p>
+                                                </div>
+                                                <div v-else>
+                                                    n
                                                 </div>
                                             </v-card>
                                             <v-divider></v-divider>
-                                            <v-card title="Transferência">
-                                                <div class="d-flex justify-space-between text-deep-orange">
-                                                    <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                                    <p class="mx-5">12</p>
-                                                </div>
-                                            </v-card>
                                         </v-col>
                                     </v-row>
                                 </v-tabs-window-item>
@@ -195,12 +202,27 @@ watch(group, () => {
                             <v-dialog v-model="dialog" width="auto">
                                 <v-card width="400" prepend-icon="mdi-currency-usd"
                                     text="digite abaixo o valor a ser depositado." title="Depositar Saldo">
-                                    
+
                                     <template v-slot:actions>
                                         <v-btn class="ms-auto" color="deep-orange" text="Ok"
                                             @click="handleDepositaSaldo"></v-btn>
                                     </template>
                                     <v-text-field label="valor" v-model="valorDeposito" type="number"></v-text-field>
+                                </v-card>
+                            </v-dialog>
+
+                            <v-dialog v-model="dialogTransferencia" width="auto">
+                                <v-card width="400" prepend-icon="mdi-currency-usd"
+                                    text="digite abaixo o valor a ser transferido." title="Transferir Saldo">
+
+                                    <template v-slot:actions>
+                                        <v-btn class="ms-auto" color="deep-orange" text="Confirmar"
+                                            @click="handleTransfereSaldo"></v-btn>
+                                    </template>
+                                    <v-text-field label="Numero da Conta" v-model="contaID"
+                                        type="number"></v-text-field>
+                                    <v-text-field label="valor" v-model="valorTransferencia"
+                                        type="number"></v-text-field>
                                 </v-card>
                             </v-dialog>
                         </v-tabs-window-item>

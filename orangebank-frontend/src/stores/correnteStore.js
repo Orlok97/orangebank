@@ -58,8 +58,24 @@ import { defineStore } from "pinia";
             // this.saldo=this.saldo+value
             
         },
-        async trasnferirSaldo(id){
-            
+        async trasnferirSaldo(id, value){
+            const response=await fetch('http://127.0.0.1:8000/api/corrente/transferir/'+id,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':`Bearer ${sessionStorage.getItem('access_token')}`
+                },
+                body:JSON.stringify({
+                    valor:value
+                })
+                
+            })
+            if(!response.ok){
+                throw new Error('erro ao transferir valor')
+            }
+            const data=await response.json()
+            console.log(data.response)
+            this.saldo = parseFloat(this.saldo) - parseFloat(value)
         }      
     }
 })
