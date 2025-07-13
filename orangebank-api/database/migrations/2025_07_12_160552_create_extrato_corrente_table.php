@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->decimal('saldo',10,2);
             $table->unsignedBigInteger('user_id');
+            $table->string('tipo');
             $table->foreign('user_id')->references('id')->on('users');
 
             $table->unsignedBigInteger('receiver_id');
