@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 const authStore = useAuthStore();
 const email=ref('');
 const password=ref('');
+const router=useRouter();
 
 const handleLogin=async()=>{
-    await authStore.login(email.value, password.value)
+    await authStore.login(email.value, password.value, router)
 }
 </script>
 

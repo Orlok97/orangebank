@@ -24,10 +24,20 @@ const router = createRouter({
     {
       path:'/dashboard',
       name:'dashboard',
-      component:()=>import('../pages/HomeView.vue')
+      component:()=>import('../pages/HomeView.vue'),
+      meta:{requiresAuth:true}
     }
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  const token = sessionStorage.getItem('access_token')
+  if (to.meta.requiresAuth && !token) {
+    next('/');
+  } else {
+    next();
+  }
+});
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
