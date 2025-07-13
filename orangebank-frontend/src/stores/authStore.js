@@ -17,8 +17,11 @@ export const useAuthStore=defineStore('auth',{
                 throw new Error('erro ao efetuar o login')
             }
             const data=await response.json()
-            sessionStorage.setItem('access_token',data.token)
-            router.push('/dashboard')
+            if(data.status==='ok'){
+                sessionStorage.setItem('access_token',data.token)
+                router.push('/dashboard')
+            }
+            
             console.log(data.response)
         },
         async logout(router){
@@ -33,6 +36,7 @@ export const useAuthStore=defineStore('auth',{
                 throw new Error('erro ao encerrar a sessão')
             }
             const data = await response.json()
+            sessionStorage.removeItem('access_token')
             console.log(data.response)
             router.push('/')
         }
