@@ -5,21 +5,21 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from 'vuetify'
 
-const theme=useTheme()
-const themeIcon=ref('mdi-weather-sunny')
-const isThemeDark=ref(true)
-const authStore=useAuthStore()
+const theme = useTheme()
+const themeIcon = ref('mdi-weather-sunny')
+const isThemeDark = ref(true)
+const authStore = useAuthStore()
 const userStore = useUserStore()
 const dialog = ref(false)
 
-const router=useRouter()
+const router = useRouter()
 const isSaldoVisible = ref(true);
 const icon = ref('mdi-eye-off')
 const tab = ref(null)
 const extratoTab = ref('depositos')
 const stocks = ref(null)
 const fixedIncome = ref(null)
-const stocksDialog=ref(false)
+const stocksDialog = ref(false)
 const drawer = ref(false)
 const group = ref(null)
 
@@ -37,12 +37,12 @@ onMounted(async () => {
     await getStocks()
 })
 
-const toggleTheme=()=>{
-    isThemeDark.value=!isThemeDark.value
-    if(!isThemeDark.value){
-        themeIcon.value='mdi-moon-waxing-crescent'
-    }else{
-        themeIcon.value='mdi-weather-sunny'   
+const toggleTheme = () => {
+    isThemeDark.value = !isThemeDark.value
+    if (!isThemeDark.value) {
+        themeIcon.value = 'mdi-moon-waxing-crescent'
+    } else {
+        themeIcon.value = 'mdi-weather-sunny'
     }
     theme.toggle()
 
@@ -65,7 +65,7 @@ const toggleIcon = () => {
         icon.value = 'mdi-eye-off-outline'
     }
 }
-const handleLogout=async()=>{
+const handleLogout = async () => {
     await authStore.logout(router)
 }
 
@@ -236,6 +236,7 @@ watch(group, () => {
                                 </v-col>
 
                             </v-row>
+
                             <p class="text-h5 text-center mt-10">Histórico de Compras</p>
                             <v-row justify="center">
                                 <v-col cols="12">
@@ -254,13 +255,28 @@ watch(group, () => {
                                     </v-card>
                                 </v-col>
                             </v-row>
-                            <v-dialog v-model="stocksDialog" width="auto">
-                                <v-card max-width="400" prepend-icon="mdi-update"
-                                    text="Your application will relaunch automatically after the update is complete."
-                                    title="Update in progress">
-                                    <template v-slot:actions>
-                                        <v-btn class="ms-auto" text="Ok" @click="stockDialog = !stocksDialog"></v-btn>
-                                    </template>
+                            <v-dialog v-model="stocksDialog" width="500" max-width="500">
+                                <v-card>
+                                    <v-card-title class="text-h6">Lista de Ações</v-card-title>
+                                    <v-divider></v-divider>
+
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <div v-for="stock in stocks" :key="stock.symbol">
+                                            <v-card flat>
+                                                <v-card-title>{{ stock.name }}</v-card-title>
+                                                <v-card-text>Preço atual: {{ stock.currentPrice }}</v-card-text>
+                                                <v-card-actions>
+                                                    <v-btn color="deep-orange">Comprar</v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                            <v-divider></v-divider>
+                                        </div>
+                                    </div>
+
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn text @click="stocksDialog = false">Fechar</v-btn>
+                                    </v-card-actions>
                                 </v-card>
                             </v-dialog>
                         </v-tabs-window-item>
