@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useCorrenteStore } from '@/stores/correnteStore'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from 'vuetify'
@@ -10,8 +11,9 @@ const themeIcon = ref('mdi-weather-sunny')
 const isThemeDark = ref(true)
 const authStore = useAuthStore()
 const userStore = useUserStore()
+const correnteStore=useCorrenteStore()
 const dialog = ref(false)
-
+const valorDeposito=ref(0)
 const router = useRouter()
 const isSaldoVisible = ref(true);
 const icon = ref('mdi-eye-off')
@@ -34,6 +36,8 @@ const items = [
 onMounted(async () => {
 
     await userStore.getAuthUser()
+    await correnteStore.getSaldo()
+    await correnteStore.getExtrato()
     await getStocks()
 })
 
@@ -64,6 +68,11 @@ const toggleIcon = () => {
     } else {
         icon.value = 'mdi-eye-off-outline'
     }
+}
+const handleDepositaSaldo=async()=>{
+    console.log(valorDeposito.value,'teste')
+    await correnteStore.createDeposito(valorDeposito.value)
+    dialog.value=false;
 }
 const handleLogout = async () => {
     await authStore.logout(router)
@@ -111,7 +120,7 @@ watch(group, () => {
                                         height="200">
 
                                         <div class="d-flex justify-space-between align-center my-5">
-                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS 0.00</p>
+                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS {{ correnteStore.saldo }}</p>
                                             <p v-else class="text-h5 mx-2">$RS ****</p>
                                             <v-icon class="mx-4" :icon="icon" size="x-large"
                                                 @click="toggleIcon"></v-icon>
@@ -150,19 +159,13 @@ watch(group, () => {
                                 <v-tabs-window-item value="depositos">
                                     <v-row justify="center">
                                         <v-col cols="12">
-                                            <v-card title="Depósito">
+                                            <v-card v-for="extrato in correnteStore.extrato" title="Depósito">
                                                 <div class="d-flex justify-space-between text-deep-orange">
                                                     <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                                    <p class="mx-5">12</p>
+                                                    <p class="mx-5">{{ extrato.saldo  }}</p>
                                                 </div>
                                             </v-card>
                                             <v-divider></v-divider>
-                                            <v-card title="Depósito">
-                                                <div class="d-flex justify-space-between text-deep-orange">
-                                                    <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                                    <p class="mx-5">12</p>
-                                                </div>
-                                            </v-card>
                                         </v-col>
                                     </v-row>
 
@@ -192,11 +195,12 @@ watch(group, () => {
                             <v-dialog v-model="dialog" width="auto">
                                 <v-card width="400" prepend-icon="mdi-currency-usd"
                                     text="digite abaixo o valor a ser depositado." title="Depositar Saldo">
+                                    
                                     <template v-slot:actions>
                                         <v-btn class="ms-auto" color="deep-orange" text="Ok"
-                                            @click="dialog = false"></v-btn>
+                                            @click="handleDepositaSaldo"></v-btn>
                                     </template>
-                                    <v-text-field label="valor" type="number"></v-text-field>
+                                    <v-text-field label="valor" v-model="valorDeposito" type="number"></v-text-field>
                                 </v-card>
                             </v-dialog>
                         </v-tabs-window-item>
