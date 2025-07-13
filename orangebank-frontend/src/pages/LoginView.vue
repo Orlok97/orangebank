@@ -36,7 +36,7 @@ const handleLogin = async () => {
                 </v-row>
             </v-container>
         </v-form>
-
+        <router-link class="text-white" to="/sign-up">Cadastre-se</router-link>
 
     </v-container>
 </template>

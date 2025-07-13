@@ -62,5 +62,6 @@ const createUser=async()=>{
                 
             </v-container>
         </v-form>
+        <router-link class="text-white" to="/">Login</router-link>
     </div>
 </template>
