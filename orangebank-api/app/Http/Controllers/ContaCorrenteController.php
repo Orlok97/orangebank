@@ -57,6 +57,7 @@ class ContaCorrenteController extends Controller
                 'usuario não encontrado'
             ]);
         }
+        $minha_conta=ContaCorrente::where('user_id',auth()->user()->id)->first();
         $conta_corrente=ContaCorrente::where('user_id',$user->id)->first();
         if($conta_corrente == null && $request->valor > 0){
             $conta_corrente=new ContaCorrente;
@@ -68,6 +69,10 @@ class ContaCorrenteController extends Controller
             $conta_corrente->saldo=($request->valor+$saldoAtual);
             $conta_corrente->save();
         }
+        
+        $minha_conta->saldo=($minha_conta->saldo-$request->valor);
+        $minha_conta->save();
+
         $extrato=new ExtratoCorrente;
         $extrato->saldo=$request->valor;
         $extrato->user_id=auth()->user()->id;
