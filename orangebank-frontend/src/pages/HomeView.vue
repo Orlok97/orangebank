@@ -3,7 +3,11 @@ import { ref, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useTheme } from 'vuetify'
 
+const theme=useTheme()
+const themeIcon=ref('mdi-weather-sunny')
+const isThemeDark=ref(true)
 const authStore=useAuthStore()
 const userStore = useUserStore()
 const dialog = ref(false)
@@ -33,6 +37,16 @@ onMounted(async () => {
     await getStocks()
 })
 
+const toggleTheme=()=>{
+    isThemeDark.value=!isThemeDark.value
+    if(!isThemeDark.value){
+        themeIcon.value='mdi-moon-waxing-crescent'
+    }else{
+        themeIcon.value='mdi-weather-sunny'   
+    }
+    theme.toggle()
+
+}
 const getStocks = async () => {
     const response = await fetch('/assets-mock.json')
     if (response.ok) {
@@ -68,7 +82,7 @@ watch(group, () => {
                 <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
                 <v-toolbar-title>OrangeBank</v-toolbar-title>
-
+                <v-btn :icon="themeIcon" @click="toggleTheme" variant="text"></v-btn>
                 <v-btn icon="mdi-logout" @click="handleLogout" variant="text"></v-btn>
             </v-app-bar>
 
