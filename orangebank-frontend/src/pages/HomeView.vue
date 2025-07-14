@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useCorrenteStore } from '@/stores/correnteStore'
+import { useInvestimentoStore } from '@/stores/investimentoStore'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from 'vuetify'
@@ -11,11 +12,14 @@ const themeIcon = ref('mdi-weather-sunny')
 const isThemeDark = ref(true)
 const authStore = useAuthStore()
 const userStore = useUserStore()
+const investimentoStore=useInvestimentoStore()
 const correnteStore = useCorrenteStore()
 const dialog = ref(false)
 const dialogTransferencia = ref(false)
 const valorDeposito = ref(0)
 const valorTransferencia = ref(0)
+const valorDepositoInvesimento=ref(0)
+const dialogInvestimento=ref(false)
 const contaID = ref(null)
 const router = useRouter()
 const isSaldoVisible = ref(true);
@@ -41,6 +45,8 @@ onMounted(async () => {
     await userStore.getAuthUser()
     await correnteStore.getSaldo()
     await correnteStore.getExtrato()
+    await investimentoStore.getSaldo()
+    await investimentoStore.getExtrato()
     await getStocks()
 })
 
@@ -77,15 +83,22 @@ const handleDepositaSaldo = async () => {
     await correnteStore.createDeposito(valorDeposito.value)
     dialog.value = false;
 }
+const handleDepositaInvestimento=async()=>{
+    await investimentoStore.createDeposito(valorDepositoInvesimento.value)
+    dialogInvestimento.value=false;
+}
 
 const handleTransfereSaldo = async () => {
     await correnteStore.trasnferirSaldo(contaID.value, valorTransferencia.value)
     dialogTransferencia.value = false;
 }
+const handleComprarAtivos=async(name,price)=>{
+    await investimentoStore.comprarAtivos(name,price)
+    stocksDialog.value=false;
+}
 const handleLogout = async () => {
     await authStore.logout(router)
 }
-
 
 watch(group, () => {
     drawer.value = false
@@ -235,7 +248,7 @@ watch(group, () => {
                                         height="200">
 
                                         <div class="d-flex justify-space-between align-center my-5">
-                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS 0.00</p>
+                                            <p v-if="isSaldoVisible" class="text-h5 mx-2">$RS {{ investimentoStore.saldo }}</p>
                                             <p v-else class="text-h5 mx-2">$RS ****</p>
                                             <v-icon class="mx-4" :icon="icon" size="x-large" @click="toggleIcon">
                                             </v-icon>
@@ -247,7 +260,7 @@ watch(group, () => {
                             <v-row justify="center">
                                 <v-col align="center" cols="6" md="2">
                                     <v-btn size="large" color="deep-orange" variant="outlined"
-                                        @click="dialog = !dialog">
+                                        @click="dialogInvestimento = !dialogInvestimento">
                                         Depositar
                                         <v-icon icon="mdi-cash-fast" end></v-icon>
 
@@ -266,19 +279,13 @@ watch(group, () => {
                             <p class="text-h5 text-center mt-10">Histórico de Compras</p>
                             <v-row justify="center">
                                 <v-col cols="12">
-                                    <v-card title="Compra">
+                                    <v-card v-for="extrato in investimentoStore.extrato " title="Compra">
                                         <div class="d-flex justify-space-between text-deep-orange">
-                                            <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                            <p class="mx-5">12</p>
+                                            <p class="mx-5">{{ extrato.stock_name }}</p>
+                                            <p class="mx-5">{{ extrato.stock_price }}</p>
                                         </div>
                                     </v-card>
                                     <v-divider></v-divider>
-                                    <v-card title="Compra">
-                                        <div class="d-flex justify-space-between text-deep-orange">
-                                            <p class="mx-5">{{ userStore.user['name'] }}</p>
-                                            <p class="mx-5">12</p>
-                                        </div>
-                                    </v-card>
                                 </v-col>
                             </v-row>
                             <v-dialog v-model="stocksDialog" width="500" max-width="500">
@@ -292,7 +299,7 @@ watch(group, () => {
                                                 <v-card-title>{{ stock.name }}</v-card-title>
                                                 <v-card-text>Preço atual: {{ stock.currentPrice }}</v-card-text>
                                                 <v-card-actions>
-                                                    <v-btn color="deep-orange">Comprar</v-btn>
+                                                    <v-btn color="deep-orange" @click="handleComprarAtivos(stock.name,stock.currentPrice)">Comprar</v-btn>
                                                 </v-card-actions>
                                             </v-card>
                                             <v-divider></v-divider>
@@ -303,6 +310,17 @@ watch(group, () => {
                                         <v-spacer></v-spacer>
                                         <v-btn text @click="stocksDialog = false">Fechar</v-btn>
                                     </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                            <v-dialog v-model="dialogInvestimento" width="auto">
+                                <v-card width="400" prepend-icon="mdi-currency-usd"
+                                    text="digite abaixo o valor a ser depositado." title="Depositar Saldo">
+
+                                    <template v-slot:actions>
+                                        <v-btn class="ms-auto" color="deep-orange" text="Ok"
+                                            @click="handleDepositaInvestimento"></v-btn>
+                                    </template>
+                                    <v-text-field label="valor" v-model="valorDepositoInvesimento" type="number"></v-text-field>
                                 </v-card>
                             </v-dialog>
                         </v-tabs-window-item>

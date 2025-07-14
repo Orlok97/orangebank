@@ -13,8 +13,13 @@ class ContaCorrenteController extends Controller
 
     public function getSaldo(){
         $corrente=ContaCorrente::where('user_id','=',auth()->user()->id)->first();
+        if($corrente==null){
+            $saldo=0;
+        }else{
+            $saldo=$corrente->saldo;
+        }
         return response()->json([
-            'response'=>$corrente->saldo
+            'response'=>$saldo
         ]);
     }
 
